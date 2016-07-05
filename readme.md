@@ -19,3 +19,9 @@ Given that I have Magento installed in `/home/nrj/magento`, I can discover its l
     // Outputs: "Root: /home/nrj/magento"
     printf("Root: %s", $rootDiscovery->getRootDirectory());
 
+
+Given that I know where the Magento installation's `local.xml` is, I can access the configuration held in that file with
+the following code:
+
+    $configReader = new ConfigReader("path/to/local.xml");
+    $databaseName = $configReader->getDatabaseName();
