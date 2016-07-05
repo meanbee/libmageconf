@@ -66,4 +66,20 @@ class RootDiscoveryTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($fs->path("/test/test/test"), $rootDiscovery->getRootDirectory());
     }
+
+    /**
+     * @test
+     */
+    public function testSwimUp()
+    {
+        $fs = new FileSystem();
+
+        $fs->createDirectory("/test/app/etc", true);
+        $fs->createDirectory("/test/media", true);
+        $fs->createFile("/test/app/etc/local.xml", "example");
+
+        $rootDiscovery = new RootDiscovery($fs->path("/test/media"));
+
+        $this->assertEquals($fs->path("/test"), $rootDiscovery->getRootDirectory());
+    }
 }

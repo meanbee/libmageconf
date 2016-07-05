@@ -43,16 +43,61 @@ class RootDiscovery
      */
     protected function discoverRootDirectory()
     {
-        $iterator = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($this->baseDirectory),
-            RecursiveIteratorIterator::SELF_FIRST
-        );
+        if ($dir = $this->checkCurrentDirectory()) {
+            return $dir;
+        }
 
+        if ($dir = $this->checkParentDirectories()) {
+            return $dir;
+        }
+
+        if ($dir = $this->checkChildDirectories()) {
+            return $dir;
+        }
+
+        return null;
+    }
+
+    /**
+     * @return null|string
+     */
+    protected function checkCurrentDirectory()
+    {
         if (is_dir($this->baseDirectory)) {
             if ($this->isDirectoryRoot($this->baseDirectory)) {
                 return $this->baseDirectory;
             }
         }
+
+        return null;
+    }
+
+    /**
+     * @return null|string
+     */
+    protected function checkParentDirectories()
+    {
+        $dir = new SplFileInfo($this->baseDirectory);
+        while ($testDir = $dir->getPath()) {
+            if ($this->isDirectoryRoot($testDir)) {
+                return $testDir;
+            }
+
+            $dir = new SplFileInfo($testDir);
+        }
+
+        return null;
+    }
+
+    /**
+     * @return null|string
+     */
+    protected function checkChildDirectories()
+    {
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($this->baseDirectory),
+            RecursiveIteratorIterator::SELF_FIRST
+        );
 
         foreach($iterator as $fileInfo) {
             /** @var SplFileInfo $fileInfo */
