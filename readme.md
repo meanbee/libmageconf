@@ -1,6 +1,6 @@
 # LibMageConf
 
-[![Build Status](https://travis-ci.org/meanbee/libmageconf.svg?branch=master)](https://travis-ci.org/meanbee/libmageconf)
+[![Build Status](https://travis-ci.org/meanbee/libmageconf.svg?branch=master)](https://travis-ci.org/meanbee/libmageconf) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/meanbee/libmageconf/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/meanbee/libmageconf/?branch=master) [![Code Coverage](https://scrutinizer-ci.com/g/meanbee/libmageconf/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/meanbee/libmageconf/?branch=master)
 
 This library provides a mechanism for discovering a Magento installation, given a starting directory.  This is useful
 for building tools that integrate externally with Magento but still need access to its configuration or certain files,
