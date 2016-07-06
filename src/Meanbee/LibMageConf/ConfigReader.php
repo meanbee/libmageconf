@@ -18,8 +18,18 @@ class ConfigReader
                 sprintf("Unable to find config file at %s", $this->configFile)
             );
         }
+    }
 
-        $this->xmlDoc = new \SimpleXMLElement(file_get_contents($this->configFile));
+    /**
+     * @return \SimpleXMLElement
+     */
+    protected function getXmlDoc()
+    {
+        if ($this->xmlDoc === null) {
+            $this->xmlDoc = new \SimpleXMLElement(file_get_contents($this->configFile));
+        }
+
+        return $this->xmlDoc;
     }
 
     /**
@@ -28,7 +38,7 @@ class ConfigReader
      */
     public function xpath($xpath)
     {
-        $result = $this->xmlDoc->xpath($xpath);
+        $result = $this->getXmlDoc()->xpath($xpath);
 
         if (count($result) > 0) {
             return (string) $result[0];
