@@ -2,6 +2,7 @@
 
 namespace Meanbee\LibMageConf;
 
+use Meanbee\LibMageConf\ConfigReader\Factory as ConfigReaderFactory;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use SplFileInfo;
@@ -15,13 +16,20 @@ class RootDiscovery
 {
     protected $baseDirectory;
     protected $rootDirectory;
+    protected $configReaderFactory;
 
     /**
      * @param string $baseDirectory The directory from which to start the search
+     * @param ConfigReaderFactory $configReaderFactory
      */
-    public function __construct($baseDirectory)
+    public function __construct($baseDirectory, ConfigReaderFactory $configReaderFactory = null)
     {
+        if ($configReaderFactory === null) {
+            $configReaderFactory = new ConfigReaderFactory();
+        }
+
         $this->baseDirectory = $baseDirectory;
+        $this->configReaderFactory = $configReaderFactory;
     }
 
     /**
@@ -36,6 +44,18 @@ class RootDiscovery
         }
 
         return $this->rootDirectory;
+    }
+
+    /**
+     * @return ConfigReader
+     */
+    public function getConfigReader()
+    {
+        return $this->configReaderFactory->create(
+            $this->getLocalXmlPath(
+                $this->getRootDirectory()
+            )
+        );
     }
 
     /**
@@ -119,8 +139,15 @@ class RootDiscovery
      */
     protected function isDirectoryRoot($directory)
     {
-        $localXmlLocation = sprintf("%s/app/etc/local.xml", $directory);
+        return file_exists($this->getLocalXmlPath($directory));
+    }
 
-        return file_exists($localXmlLocation);
+    /**
+     * @param $directory
+     * @return string
+     */
+    protected function getLocalXmlPath($directory)
+    {
+        return sprintf("%s/app/etc/local.xml", $directory);
     }
 }

@@ -82,4 +82,20 @@ class RootDiscoveryTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($fs->path("/test"), $rootDiscovery->getRootDirectory());
     }
+
+    /**
+     * @test
+     */
+    public function testGetConfigReader()
+    {
+        $fs = new FileSystem();
+
+        $fs->createDirectory("/test/app/etc", true);
+        $fs->createFile("/test/app/etc/local.xml", "example");
+
+        $rootDiscovery = new RootDiscovery($fs->path("/test"));
+
+        $this->assertEquals($fs->path("/test"), $rootDiscovery->getRootDirectory());
+        $this->assertInstanceOf('Meanbee\LibMageConf\ConfigReader', $rootDiscovery->getConfigReader());
+    }
 }
