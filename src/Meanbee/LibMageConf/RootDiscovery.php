@@ -52,10 +52,38 @@ class RootDiscovery
     public function getConfigReader()
     {
         return $this->configReaderFactory->create(
-            $this->getLocalXmlPath(
-                $this->getRootDirectory()
-            )
+            $this->getConfigurationFilePath(),
+            $this->getInstallationType()
         );
+    }
+
+    /**
+     * @return string
+     */
+    public function getInstallationType()
+    {
+        if ($this->isMagentoOneDirectoryRoot($this->getRootDirectory())) {
+            return MagentoType::MAGENTO_1;
+        }
+
+        if ($this->isMagentoTwoDirectoryRoot($this->getRootDirectory())) {
+            return MagentoType::MAGENTO_2;
+        }
+
+        return MagentoType::UNKNOWN;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getConfigurationFilePath()
+    {
+        switch ($this->getInstallationType()) {
+            case MagentoType::MAGENTO_1:
+                return $this->getLocalXmlPath($this->getRootDirectory());
+            case MagentoType::MAGENTO_2:
+                return $this->getEnvPhpPath($this->getRootDirectory());
+        }
     }
 
     /**
@@ -139,7 +167,21 @@ class RootDiscovery
      */
     protected function isDirectoryRoot($directory)
     {
+        return $this->isMagentoOneDirectoryRoot($directory) || $this->isMagentoTwoDirectoryRoot($directory);
+    }
+
+    /**
+     * @param $directory
+     * @return bool
+     */
+    protected function isMagentoOneDirectoryRoot($directory)
+    {
         return file_exists($this->getLocalXmlPath($directory));
+    }
+
+    protected function isMagentoTwoDirectoryRoot($directory)
+    {
+        return file_exists($this->getEnvPhpPath($directory));
     }
 
     /**
@@ -149,5 +191,14 @@ class RootDiscovery
     protected function getLocalXmlPath($directory)
     {
         return sprintf("%s/app/etc/local.xml", $directory);
+    }
+
+    /**
+     * @param $directory
+     * @return string
+     */
+    protected function getEnvPhpPath($directory)
+    {
+        return sprintf("%s/app/etc/env.php", $directory);
     }
 }

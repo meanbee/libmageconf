@@ -1,11 +1,12 @@
 <?php
 
-namespace Meanbee\LibMageConfTest;
+namespace Meanbee\LibMageConfTest\ConfigReader;
 
 use Meanbee\LibMageConf\ConfigReader;
+use Meanbee\LibMageConf\ConfigReader\MagentoTwo;
 use VirtualFileSystem\FileSystem;
 
-class ConfigReaderTest extends \PHPUnit_Framework_TestCase
+class MagentoTwoTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test
@@ -14,23 +15,9 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
     public function testFileDoesntExist()
     {
         $fs = new FileSystem();
-        $fs->createFile("/local.xml", $this->getExampleLocalXmlContent());
+        $fs->createFile("/env.php", $this->getExampleEnvPhpContent());
 
-        new ConfigReader($fs->path("/local123.xml"));
-    }
-
-    /**
-     * @test
-     */
-    public function testXpathAccessor()
-    {
-        $fs = new FileSystem();
-        $fs->createFile("/local.xml", $this->getExampleLocalXmlContent());
-
-        $configReader = new ConfigReader($fs->path("/local.xml"));
-
-        $this->assertEquals('d6e6ecf0111111463ffd1a37c3a349e8', $configReader->xpath('//config/global/crypt/key'));
-        $this->assertNull($configReader->xpath('//ive/just/made/this/up'));
+        new MagentoTwo($fs->path("/env123.php"));
     }
 
     /**
@@ -40,9 +27,9 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
     public function testAccessors($method, $expectedValue)
     {
         $fs = new FileSystem();
-        $fs->createFile("/local.xml", $this->getExampleLocalXmlContent());
+        $fs->createFile("/env.php", $this->getExampleEnvPhpContent());
 
-        $configReader = new ConfigReader($fs->path("/local.xml"));
+        $configReader = new MagentoTwo($fs->path("/env.php"));
 
         if (!method_exists($configReader, $method)) {
             $this->fail(sprintf("Expected method %s to exist, but it didn't", $method));
@@ -57,9 +44,9 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
     public function testDatabasePortParsing()
     {
         $fs = new FileSystem();
-        $fs->createFile("/local.xml", $this->getExampleLocalXmlWithPortContent());
+        $fs->createFile("/env.php", $this->getExampleEnvPhpWithPortContent());
 
-        $configReader = new ConfigReader($fs->path("/local.xml"));
+        $configReader = new MagentoTwo($fs->path("/env.php"));
 
         $this->assertEquals("1989", $configReader->getDatabasePort());
         $this->assertEquals("db", $configReader->getDatabaseHost());
@@ -68,23 +55,24 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
     /**
      * @return string
      */
-    protected function getExampleLocalXmlContent()
+    protected function getExampleEnvPhpContent()
     {
-        return $this->loadFixtureToString("exampleLocalXml.xml");
+        return $this->loadFixtureToString("exampleEnvPhp.php");
     }
 
     /**
      * @return string
      */
-    protected function getExampleLocalXmlWithPortContent()
+    protected function getExampleEnvPhpWithPortContent()
     {
-        return $this->loadFixtureToString("exampleLocalXmlWithDatabasePort.xml");
+        return $this->loadFixtureToString("exampleEnvPhpWithDatabasePort.php");
     }
 
     protected function loadFixtureToString($filename)
     {
         return file_get_contents(join(DIRECTORY_SEPARATOR, [
             __DIR__,
+            '..',
             "etc",
             $filename
         ]));
@@ -95,11 +83,11 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
         $pairs = [
             'getDatabaseHost'     => 'db',
             'getDatabasePort'     => '',
-            'getDatabaseUsername' => 'root',
-            'getDatabasePassword' => 'toor',
-            'getDatabaseName'     => 'magento',
-            'getAdminFrontName'   => 'admin',
-            'getInstallDate'      => 'Wed, 14 Mar 2012 15:12:29 +0000'
+            'getDatabaseUsername' => 'magento2user',
+            'getDatabasePassword' => 'magento2pass',
+            'getDatabaseName'     => 'magento2dbname',
+            'getAdminFrontName'   => 'admin_139p1v',
+            'getInstallDate'      => 'Tue, 13 Sep 2016 10:18:06 +0000'
         ];
 
         $formatted = [];

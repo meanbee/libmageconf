@@ -2,6 +2,7 @@
 
 namespace Meanbee\LibMageConfTest;
 
+use Meanbee\LibMageConf\MagentoType;
 use Meanbee\LibMageConf\RootDiscovery;
 use VirtualFileSystem\FileSystem;
 
@@ -17,9 +18,17 @@ class RootDiscoveryTest extends \PHPUnit_Framework_TestCase
         $fs->createDirectory("/test/app/etc", true);
         $fs->createFile("/test/app/etc/local.xml", "example");
 
+        $fs->createDirectory("/test_m2/app/etc", true);
+        $fs->createFile("/test_m2/app/etc/env.php", "example");
+
         $rootDiscovery = new RootDiscovery($fs->path("/test"));
+        $rootDiscoveryM2 = new RootDiscovery($fs->path("/test_m2"));
 
         $this->assertEquals($fs->path("/test"), $rootDiscovery->getRootDirectory());
+        $this->assertEquals(MagentoType::MAGENTO_1, $rootDiscovery->getInstallationType());
+
+        $this->assertEquals($fs->path("/test_m2"), $rootDiscoveryM2->getRootDirectory());
+        $this->assertEquals(MagentoType::MAGENTO_2, $rootDiscoveryM2->getInstallationType());
     }
 
     /**
