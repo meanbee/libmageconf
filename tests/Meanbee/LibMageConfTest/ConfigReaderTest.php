@@ -52,14 +52,41 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @test
+     */
+    public function testDatabasePortParsing()
+    {
+        $fs = new FileSystem();
+        $fs->createFile("/local.xml", $this->getExampleLocalXmlWithPortContent());
+
+        $configReader = new ConfigReader($fs->path("/local.xml"));
+
+        $this->assertEquals("1989", $configReader->getDatabasePort());
+        $this->assertEquals("db", $configReader->getDatabaseHost());
+    }
+
+    /**
      * @return string
      */
     protected function getExampleLocalXmlContent()
     {
+        return $this->loadFixtureToString("exampleLocalXml.xml");
+    }
+
+    /**
+     * @return string
+     */
+    protected function getExampleLocalXmlWithPortContent()
+    {
+        return $this->loadFixtureToString("exampleLocalXmlWithDatabasePort.xml");
+    }
+
+    protected function loadFixtureToString($filename)
+    {
         return file_get_contents(join(DIRECTORY_SEPARATOR, [
             __DIR__,
             "etc",
-            "exampleLocalXml.xml"
+            $filename
         ]));
     }
 
@@ -67,6 +94,7 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
     {
         $pairs = [
             'getDatabaseHost'     => 'db',
+            'getDatabasePort'     => '',
             'getDatabaseUsername' => 'root',
             'getDatabasePassword' => 'toor',
             'getDatabaseName'     => 'magento',

@@ -52,7 +52,15 @@ class ConfigReader
      */
     public function getDatabaseHost()
     {
-        return $this->xpath('//config/global/resources/default_setup/connection/host');
+        return $this->getDatabaseHostComponents()['host'];
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getDatabasePort()
+    {
+        return $this->getDatabaseHostComponents()['port'];
     }
 
     /**
@@ -93,5 +101,27 @@ class ConfigReader
     public function getAdminFrontName()
     {
         return $this->xpath('//config/admin/routers/adminhtml/args/frontName');
+    }
+
+    /**
+     * @return array
+     */
+    protected function getDatabaseHostComponents()
+    {
+        $rawHost = $this->xpath('//config/global/resources/default_setup/connection/host');
+        $colonPosition = strrpos($rawHost, ':');
+
+        if ($colonPosition === false) {
+            $host = $rawHost;
+            $port = '';
+        } else {
+            $host = substr($rawHost, 0, $colonPosition);
+            $port = substr($rawHost, $colonPosition + 1);
+        }
+
+        return [
+            'host' => $host,
+            'port' => $port
+        ];
     }
 }
