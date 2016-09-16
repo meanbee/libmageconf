@@ -12,10 +12,6 @@ coding_style:
         concatenation: true
 
 build:
-  environment:
-    php:
-      version: 7
-
   tests:
     override:
       -
