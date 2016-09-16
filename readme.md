@@ -28,5 +28,5 @@ the following code:
 
 or
 
-    $configReader = ConfigReader\MagentoTwi("path/to/env.php");
+    $configReader = ConfigReader\MagentoTwo("path/to/env.php");
     $databaseName = $configReader->getDatabaseName();
